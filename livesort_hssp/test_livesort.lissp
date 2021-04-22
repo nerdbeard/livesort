@@ -1,0 +1,8 @@
+(hissp.basic.._macro_.prelude)
+
+(deftype TestLivesort (unittest..TestCase)
+  test_render
+  (lambda (self)
+    (.assertEqual self "----" (livesort_hssp..render '(.#"-----") 0 4 4))))
+
+(when (eq __name__ '__main__) (hissp.reader..transpile __package__ 'test_livesort))

@@ -1,0 +1,44 @@
+(hissp.basic.._macro_.prelude)
+
+(defmacro setq (symbol value)
+  "lol this isn't even my lisp"
+  `(setitem (locals) (quote ,symbol) ,value))
+
+(define livesort
+    (lambda (next-line             ; iterable function
+             print                 ; function to write output
+             height                ; window/screen height in lines
+             width                 ; window/screen width in characters
+             )
+      (let (lines (list) ; sorted lines
+            cursor 0     ; line number to keep on screen and highlight
+            quitting? False             ; set flag to exit loop
+            )
+        ;; the cursor is thought to exist between line `cursor` and `cursor - 1`
+        (any-for line next-line
+                 (let (lineno (bisect..bisect lines line))
+                   (unless (gt lineno cursor)
+                     (setq cursor (add cursor 1)))
+                   (.insert lines lineno line) 
+                   (print (.format "c{}" (render lines cursor height width))))
+                 quitting?))))
+
+(define render
+    (lambda (lines                      ; sequence of sorted lines
+             cursor                     ; line to keep on-screen
+             height                     ; window height
+             width                      ;  and width
+             )
+      (.join "\n"
+             (map (lambda (line) (getitem line (slice 0 width)))
+                  (getitem lines
+                           (let (r (ifloordiv height 2))
+                             (slice (max 0 (sub cursor r))
+                                    (min (len lines) (add cursor r)))))))))
+
+
+(when (eq __name__ '__main__)
+  (livesort sys..stdin
+            sys..stdout.write
+            (int (|| (os..getenv 'LINES) "24"))
+            (int (|| (os..getenv 'COLUMNS) "80"))))
