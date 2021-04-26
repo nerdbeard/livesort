@@ -1,8 +1,63 @@
 (hissp.basic.._macro_.prelude)
 
 (deftype TestLivesort (unittest..TestCase)
+  setUp
+  (lambda (self)
+    (attach self :
+            input-buf (list)
+            output-buf (list)
+            ls (livesort_hssp.livesort..Livesort self.input-buf
+                                                 self.output-buf.append
+                                                 4
+                                                 8)))
+
+  tearDown
+  (lambda (self)
+    (delattr self 'ls)
+    (delattr self 'output-buf)
+    (delattr self 'input-buf))
+
+  test_Livesort
+  (lambda (self)
+    (cascade self
+             (.assertEqual self.ls.next-line self.input-buf)
+             (.assertEqual self.ls.print self.output-buf.append)
+             (.assertEqual self.ls.height 4)
+             (.assertEqual self.ls.width 8)
+             (.assertFalse self.ls.lines)
+             (.assertTrue self.ls.screen))
+    (any-for line self.ls.screen
+             (not (self.assertEqual None line))))
+
+  test_sortline
+  (lambda (self)
+    (self.assertFalse self.ls.lines)
+    (self.ls.sortline "line 2")
+    (self.assertEqual self.ls.lines (list '(.#"line 2")))
+    (self.ls.sortline "line 1")
+    (self.assertEqual self.ls.lines (list '(.#"line 1" .#"line 2"))))
+
   test_render
   (lambda (self)
-    (.assertEqual self "----" (livesort_hssp..render '(.#"-----") 0 4 4))))
+    (self.ls.sortline "line 1")
+    (self.assertEqual (self.ls.render)
+                      (list '(.#"line 1"))))
 
-(when (eq __name__ '__main__) (hissp.reader..transpile __package__ 'test_livesort))
+  test_display
+  (lambda (self)
+    ;; I got fed up trying to write this sensibly, will go away after refacor
+    (self.assertEqual "[H[K
+[K
+[K
+[K" (self.ls.display))
+    (self.ls.sortline "line 1")
+    (self.assertEqual "[Hline 1[K
+
+
+" (self.ls.display)))
+
+  test_livesort                    ; note (unfortunate) capitalization
+  (lambda (self)
+    (self.input-buf.append "line 1")
+    (self.ls.livesort)
+    _#(self.assertEqual self.output-buf (list '(.#"line 1")))))

@@ -1,44 +1,72 @@
 (hissp.basic.._macro_.prelude)
 
-(defmacro setq (symbol value)
-  "lol this isn't even my lisp"
-  `(setitem (locals) (quote ,symbol) ,value))
 
-(define livesort
-    (lambda (next-line             ; iterable function
-             print                 ; function to write output
-             height                ; window/screen height in lines
-             width                 ; window/screen width in characters
-             )
-      (let (lines (list) ; sorted lines
-            cursor 0     ; line number to keep on screen and highlight
-            quitting? False             ; set flag to exit loop
-            )
-        ;; the cursor is thought to exist between line `cursor` and `cursor - 1`
-        (any-for line next-line
-                 (let (lineno (bisect..bisect lines line))
-                   (unless (gt lineno cursor)
-                     (setq cursor (add cursor 1)))
-                   (.insert lines lineno line) 
-                   (print (.format "c{}" (render lines cursor height width))))
-                 quitting?))))
+(deftype Livesort ()
+  __init__
+  (lambda (self
+           next-line        ; iterable function yielding lines of text
+           print            ; function to write output
+           height           ; window/screen height in lines
+           width            ; window/screen width in characters
+           )
+    (attach self next-line print height width :
+            lines (list)                ; sorted input lines
+            screen (list (mul height '(None))))
+    None)                         ; __init__ required to return `None`
 
-(define render
-    (lambda (lines                      ; sequence of sorted lines
-             cursor                     ; line to keep on-screen
-             height                     ; window height
-             width                      ;  and width
-             )
-      (.join "\n"
-             (map (lambda (line) (getitem line (slice 0 width)))
-                  (getitem lines
-                           (let (r (ifloordiv height 2))
-                             (slice (max 0 (sub cursor r))
-                                    (min (len lines) (add cursor r)))))))))
+  sortline
+  (lambda (self line)
+    "Insort a line and update the cursor position"
+    (when (.strip line)
+      (let (lineno (bisect..bisect self.lines line))
+        ;; Normally would use `..insort` but there's going to be more
+        (.insert self.lines lineno line))))
 
+  render
+  (lambda (self)
+    "Produce a list of the lines which should be visible, cropped to `width`" 
+    (list (map (lambda (line) (getitem line (slice None self.width)))
+               (getitem self.lines (slice None self.height)))))
+
+  display
+  (lambda (self)
+    "Compare `(self.render)` to `self.screen` and return a string that
+will update the display."
+    (let (output (list)
+                 lines (self.render)
+                 changed? (list))
+      (.append output "[H")           ; Home cursor
+      (any-for lineno (range self.height)
+               (let (line (if-else (lt lineno (len lines))
+                            (getitem lines lineno)
+                            ""))
+                 (unless (eq line (getitem self.screen lineno))
+                   (setitem self.screen lineno line)
+                   (.append changed? line)
+                   ;; ^[[K to erase any characters that follow on this line
+                   (.append output (.format "{}[K"
+                                            (.rstrip line (chr 0x0a)))))
+                 (.append output (chr 0x0a))) ; Move to beginning of next line
+               False)
+      ;; If something changed, don't bother outputting the last cursor
+      ;; movement code.  If nothing changed, don't bother outputting
+      ;; anything.
+      (if-else changed?
+               (.join "" (getitem output (slice None -1)))
+               "")))
+  
+  livesort
+  (lambda (self)
+    "Process every input line, updating screen each line"
+    (any-for line self.next-line
+             (.sortline self line)
+             (.print self (.display self))
+             False)))
 
 (when (eq __name__ '__main__)
-  (livesort sys..stdin
-            sys..stdout.write
-            (int (|| (os..getenv 'LINES) "24"))
-            (int (|| (os..getenv 'COLUMNS) "80"))))
+  (.livesort (Livesort sys..stdin
+                       (lambda (data)
+                         (sys..stdout.write data)
+                         (sys..stdout.flush))
+                       (int (|| (os..getenv 'LINES) "24"))
+                       (int (|| (os..getenv 'COLUMNS) "80")))))
