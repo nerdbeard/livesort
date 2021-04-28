@@ -54,5 +54,8 @@ Consider only a substring for the purpose of the next ~--key~.  If used on the i
 
 There should be a regexp version of this, too.
 
+*** ~--key=text~
+Needed so that multiple fields can be cut from the input and keyed.
+
 *** ~--batch~
 Don't run interactively.  Don't livesort.  Just process all the input, and then output the entire sorted output.
