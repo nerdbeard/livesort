@@ -42,6 +42,11 @@ will update the display."
                             ""))
                  (unless (eq line (getitem self.screen lineno))
                    (setitem self.screen lineno line)
+                   ;; `changed?` might have just been an explicit
+                   ;; boolean value, but Hissp would prefer that we
+                   ;; mutate values and not reassign variables.  Since
+                   ;; a `list` is an implicit boolean value, appending
+                   ;; (or not) to it works fine.
                    (.append changed? line)
                    ;; ^[[K to erase any characters that follow on this line
                    (.append output (.format "{}[K"
