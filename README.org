@@ -6,7 +6,7 @@
 
 This is a small application I am developing in parallel in both Hy and Lissp for the purpose of exploring and comparing the languages.  I wrote it first in Lissp and performed a direct transliteration to Hy, learning both languages as I went.  So far, my observations are superficial and the application is (not even) a single iteration deep.
 
-The application reads lines, sorts them to an internal list, and displays a continuously updated screenful of the top of the sorted list.
+The application currently reads lines, sorts them to an internal list, and displays a continuously updated screenful of the top of the sorted list.  A complete version of the application would be a replacement for and improvement on ~... | cut ... | sort ... | less~.
 
 * Fight!
 
