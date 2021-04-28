@@ -6,6 +6,10 @@
 
 This is a small application I am developing in parallel in both Hy and Lissp for the purpose of exploring and comparing the languages.  I wrote it first in Lissp and performed a direct transliteration to Hy, learning both languages as I went.  So far, my observations are superficial and the application is (not even) a single iteration deep.
 
+The application reads lines, sorts them to an internal list, and displays a continuously updated screenful of the top of the sorted list.
+
+* Fight!
+
 Hissp attempts to provide a pure, minimal, Lisp-like environment.  It's certainly not bashful about the fact that it is built on top of Python -- it compiles directly to Python expressions -- but it's not attempting to fully expose Python-the-language.  It is just trying to be the best (ie most minimal) Hissp it can be and fully exposing Python-the-language would compromise that.  It would be too hairy and baroque.  Hissp does fully expose Python's model to Lissp and allows complete interoperability, and you can inject Python whenever you want (which I have attempted to avoid).
 
 In contrast, Hy attempts to be Python in all it's glorious quarter century of simple, benevolent creep, re-expressed in s-expressions and with the power of metaprogramming.  I haven't spent a lot of time with it but it has a lot of polish.  Emacs has ~hy-mode~ and it integrates nicely with an ~inferior-lisp-shell~ just like you expect.  When a ~unittest.TestCase~ has an error, hitting ~C-x [backtick]~ takes you to the exact line of .hy code that generated the error.  This was a huge change from Lissp where I was encouraged to roll my own primitives and debugging was primitive.  Hy is planning a 1.0 soon and yeah, I can kinda see where they are coming from.  There is a lot of work in this.  And it's kinda hairy.  But not in a bad way.
@@ -18,7 +22,7 @@ The install story was the same for both.  Pretty much ideal once I realized I ne
 
 * TODOs
 
-I've really enjoyed working with both languages and I hope to develop the application further.  Also, I want the app.
+I've really enjoyed working with both languages and I hope to develop the application further.  So far I am not really exploring any idioms of either language or exploiting metaprogramming.  Also, I want the app.
 
 ** Hebigo
 Hissp can also be expressed as "readerless" tuples-of-tuples-and-strings, and something called Hebigo.  I haven't looked into it yet.  Consider porting the app a second time, which should be a quite mechanical process, but maybe the macros included with Hebigo will allow the application to be expressed differently and demonstrate something.
