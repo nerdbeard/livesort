@@ -1,0 +1,50 @@
+* Livesort: Hy vs Lissp
+
+This is a small application I am developing in parallel in both Hy and Lissp for the purpose of exploring and comparing the languages.  I wrote it first in Lissp and performed a direct transliteration to Hy, learning both languages as I went.  So far, my observations are superficial and the application is (not even) a single iteration deep.
+
+Hissp attempts to provide a pure, minimal, Lisp-like environment.  It's certainly not bashful about the fact that it is built on top of Python -- it compiles directly to Python expressions -- but it's not attempting to fully expose Python-the-language.  It is just trying to be the best (ie most minimal) Hissp it can be and fully exposing Python-the-language would compromise that.  It would be too hairy and baroque.  Hissp does fully expose Python's model to Lissp and allows complete interoperability, and you can inject Python whenever you want (which I have attempted to avoid).
+
+In contrast, Hy attempts to be Python in all it's glorious half century of simple, benevolent creep, re-expressed in s-expressions and with the power of metaprogramming.  I haven't spent a lot of time with it but it has a lot of polish.  Emacs has `hy-mode` and it integrates nicely with an `inferior-lisp-shell` just like you expect.  When a `unittest.TestCase` has an error, hitting `C-x [backtick]` takes you to the exact line of .hy code that generated the error.  This was a huge change from Lissp where I was encouraged to roll my own primitives and debugging was primitive.  Hy is planning a 1.0 soon and yeah, I can kinda see where they are coming from.  There is a lot of work in this.  And it's kinda hairy.  But not in a bad way.
+
+Hissp feels like something that a clever person (not me) could read and digest in an afternoon, sleep on it, and be ready to push the state of the art the next day.  Hy feels like...  Python.
+
+Hissp doesn't really feel like something a sensible person would write an application in.  It's something you'd use for your application's bespoke visual scripting language.  Or something.  I'm not sure exactly what, but it would probably be a component in something rather than the glue holding it all together.  While it doesn't feel *sensible* to be writing an application in Hy, it does feel pretty frictionless.  Almost like it's something they expect a person might do, sensible or otherwise.
+
+The install story was the same for both.  Pretty much ideal once I realized I needed to be on Python 3.8.  PIP is pretty amazing.
+
+** TODOs
+
+I've really enjoyed working with both languages and I hope to develop the application further.  Also, I want the app.
+
+*** Hebigo
+Hissp can also be expressed as "readerless" tuples-of-tuples-and-strings, and something called Hebigo.  I haven't looked into it yet.  Consider porting the app a second time, which should be a quite mechanical process, but maybe the macros included with Hebigo will allow the application to be expressed differently and demonstrate something.
+
+*** Symbolic cursor control codes
+The literal cursor control codes embedded everywhere are awful.
+
+*** Interactive
+When `sys.stdin` is not `/dev/tty`, re-open the tty and use it for interactive control.  Give the user controls similar to `less` but with live sorted contents.  Don't exit automatically.
+
+*** Keys
+
+Multiple keys may be specified in order of decreasing significance.  There is always a final implicit key which is the raw value of the line itself.
+
+**** `--key=mtime`, `--key=ctime`
+Treat the input lines as paths and sort based on the corresponding mtime and/or ctime.
+
+**** `--key=numeric`
+Treat the input as a string representation of a numeric value (*a la* `sort -n`).
+
+**** `--key=shuffle`
+Insert a randomized key.
+
+**** `--reverse`
+Invert the meaning of the next `--key`.  There is always a final implicit key which is the raw value of the line itself.
+
+**** `--slice=[start][:end]`
+Consider only a substring for the purpose of the next `--key`.  If used on the implicit key, slice the output.
+
+There should be a regexp version of this, too.
+
+**** `--batch`
+Don't run interactively.  Don't livesort.  Just process all the input, and then output the entire sorted output.
