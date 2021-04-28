@@ -59,3 +59,6 @@ Needed so that multiple fields can be cut from the input and keyed.
 
 *** ~--batch~
 Don't run interactively.  Don't livesort.  Just process all the input, and then output the entire sorted output.
+
+*** ~--pipe~
+Output livesort to ~stderr~.  When the end of input is reached, output the complete sorted results to ~stdout~ without waiting for the user to exit.  This would allow livesort to be used in the middle of a pipeline.
