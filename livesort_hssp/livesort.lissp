@@ -1,6 +1,14 @@
 (hissp.basic.._macro_.prelude)
 
-
+;; Lissp's class definition syntax is somewhat unlike Python's class
+;; definition syntax even though it expresses the same model.  Python
+;; will nearly never imply a dict from a sequence of uncoupled pairs
+;; but this is a common way to express an association list in lisps.
+;; It's interesting that `deftype` is a macro around a `type` call in
+;; its rarely used form with three arguments.  Quoting the
+;; member/method (it does not distinguist) and class names for you in
+;; the macro makes it read a little bit more like Python than it would
+;; if you had to quote them.
 (deftype Livesort ()
   __init__
   (lambda (self

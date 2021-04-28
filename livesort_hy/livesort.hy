@@ -1,5 +1,9 @@
 (import [bisect [bisect]])
 
+;; Hy class definitions look a lot like Python class definitions.
+;; Much moreso now.  If one is not careful, it's easy to install an
+;; older version of Hy and the class definition syntax has changed
+;; over time.  Hopefully this 1.0a syntax is now stable.
 (defclass Livesort []
   (defn __init__ [self
                   next-line ; iterable function yielding lines of text
@@ -48,8 +52,7 @@ will update the display."
       (.sortline self line)
       (.print self (.display self)))))
 
-(defmain
-  ()
+(defmain []
   (import sys os)
   (.livesort
     (Livesort sys.stdin
